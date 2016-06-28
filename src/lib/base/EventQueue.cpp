@@ -523,6 +523,9 @@ EventQueue::hasTimerExpired(Event& event)
 	if (!timer.isOneShot()) {
 		m_timerQueue.push(timer);
 	}
+	else {
+		LOG((CLOG_DEBUG "a one shot timer expired"));
+	}
 
 	return true;
 }
