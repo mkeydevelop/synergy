@@ -120,9 +120,10 @@ ServerApp::help()
 #  define WINAPI_INFO
 #endif
 
-	char buffer[2000];
-	sprintf(
+	char buffer[4096];
+	snprintf(
 		buffer,
+		sizeof(buffer),
 		"Usage: %s"
 		" [--address <address>]"
 		" [--config <pathname>]"

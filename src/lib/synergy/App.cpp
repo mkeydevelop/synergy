@@ -80,8 +80,9 @@ void
 App::version()
 {
 	char buffer[500];
-	sprintf(
+	snprintf(
 		buffer,
+		sizeof(buffer),
 		"%s %s, protocol version %d.%d\n%s",
 		argsBase().m_pname,
 		kVersion,
