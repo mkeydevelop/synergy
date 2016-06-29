@@ -96,7 +96,12 @@ std::string
 ArchFileUnix::getInstalledDirectory()
 {
 #if WINAPI_XWINDOWS
-	return "/usr/bin";
+	char buff[PATH_MAX];
+	ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
+	if (len != -1) {
+		buff[len] = '\0';
+		return std::string(dirname(buff));
+	}
 #else
 	return "/Applications/Synergy.app/Contents/MacOS";
 #endif

@@ -125,13 +125,12 @@ ArchFileWindows::getSystemDirectory()
 std::string
 ArchFileWindows::getInstalledDirectory()
 {
-	char fileNameBuffer[MAX_PATH];
-	GetModuleFileName(NULL, fileNameBuffer, MAX_PATH);
-	std::string fileName(fileNameBuffer);
-	size_t lastSlash = fileName.find_last_of("\\");
-	fileName = fileName.substr(0, lastSlash);
+	HMODULE hModule = GetModuleHandle(NULL);
+	TCHAR path[MAX_PATH];
+	GetModuleFileName(hModule, path, MAX_PATH);
+	PathRemoveFileSpec(path);
 
-	return fileName;
+	return path;
 }
 
 std::string
