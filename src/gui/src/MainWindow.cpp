@@ -1156,150 +1156,22 @@ void MainWindow::on_m_pButtonApply_clicked()
 	restartSynergy();
 }
 
-#if defined(Q_OS_WIN)
-bool MainWindow::isServiceRunning(QString name)
-{
-	SC_HANDLE hSCManager;
-	hSCManager = OpenSCManager(NULL, NULL, SC_MANAGER_CONNECT);
-	if (hSCManager == NULL) {
-		appendLogError("failed to open a service controller manager, error: " +
-			GetLastError());
-		return false;
-	}
-
-	SC_HANDLE hService;
-	int length = name.length();
-	wchar_t* array = new wchar_t[length + 1];
-	name.toWCharArray(array);
-	array[length] = '\0';
-
-	hService = OpenService(hSCManager, array, SERVICE_QUERY_STATUS);
-
-	delete[] array;
-
-	if (hService == NULL) {
-		appendLogDebug("failed to open service: " + name);
-		return false;
-	}
-
-	SERVICE_STATUS status;
-	if (QueryServiceStatus(hService, &status)) {
-		if (status.dwCurrentState == SERVICE_RUNNING) {
-			return true;
-		}
-	}
-#else
 bool MainWindow::isServiceRunning()
 {
-#endif
 	return false;
 }
 
 bool MainWindow::isBonjourRunning()
 {
-	bool result = false;
-
-#if defined(Q_OS_WIN)
-	result = isServiceRunning("Bonjour Service");
-#else
-	result = true;
-#endif
-
-	return result;
+	return true;
 }
 
 void MainWindow::downloadBonjour()
 {
-#if defined(Q_OS_WIN)
-	QUrl url;
-	int arch = getProcessorArch();
-	if (arch == kProcessorArchWin32) {
-		url.setUrl(bonjourBaseUrl + bonjourFilename32);
-		appendLogInfo("downloading 32-bit Bonjour");
-	}
-	else if (arch == kProcessorArchWin64) {
-		url.setUrl(bonjourBaseUrl + bonjourFilename64);
-		appendLogInfo("downloading 64-bit Bonjour");
-	}
-	else {
-		QMessageBox::critical(
-			this, tr("Synergy"),
-			tr("Failed to detect system architecture."));
-		return;
-	}
-
-	if (m_pDataDownloader == NULL) {
-		m_pDataDownloader = new DataDownloader(this);
-		connect(m_pDataDownloader, SIGNAL(isComplete()), SLOT(installBonjour()));
-	}
-
-	m_pDataDownloader->download(url);
-
-	if (m_DownloadMessageBox == NULL) {
-		m_DownloadMessageBox = new QMessageBox(this);
-		m_DownloadMessageBox->setWindowTitle("Synergy");
-		m_DownloadMessageBox->setIcon(QMessageBox::Information);
-		m_DownloadMessageBox->setText("Installing Bonjour, please wait...");
-		m_DownloadMessageBox->setStandardButtons(0);
-		m_pCancelButton = m_DownloadMessageBox->addButton(
-			tr("Cancel"), QMessageBox::RejectRole);
-	}
-
-	m_DownloadMessageBox->exec();
-
-	if (m_DownloadMessageBox->clickedButton() == m_pCancelButton) {
-		m_pDataDownloader->cancel();
-	}
-#endif
 }
 
 void MainWindow::installBonjour()
 {
-#if defined(Q_OS_WIN)
-#if QT_VERSION >= 0x050000
-    QString tempLocation = QStandardPaths::writableLocation(QStandardPaths::TempLocation);
-#else
-	QString tempLocation = QDesktopServices::storageLocation(
-								QDesktopServices::TempLocation);
-#endif
-	QString filename = tempLocation;
-	filename.append("\\").append(bonjourTargetFilename);
-	QFile file(filename);
-	if (!file.open(QIODevice::WriteOnly)) {
-		m_DownloadMessageBox->hide();
-
-		QMessageBox::warning(
-			this, "Synergy",
-			tr("Failed to download Bonjour installer to location: %1")
-			.arg(tempLocation));
-		return;
-	}
-
-	file.write(m_pDataDownloader->data());
-	file.close();
-
-	QStringList arguments;
-	arguments.append("/i");
-	QString winFilename = QDir::toNativeSeparators(filename);
-	arguments.append(winFilename);
-	arguments.append("/passive");
-	if (m_BonjourInstall == NULL) {
-		m_BonjourInstall = new CommandProcess("msiexec", arguments);
-	}
-
-	QThread* thread = new QThread;
-	connect(m_BonjourInstall, SIGNAL(finished()), this,
-		SLOT(bonjourInstallFinished()));
-	connect(m_BonjourInstall, SIGNAL(finished()), thread, SLOT(quit()));
-	connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
-
-	m_BonjourInstall->moveToThread(thread);
-	thread->start();
-
-	QMetaObject::invokeMethod(m_BonjourInstall, "run", Qt::QueuedConnection);
-
-	m_DownloadMessageBox->hide();
-#endif
 }
 
 void MainWindow::promptAutoConfig()
