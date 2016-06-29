@@ -24,6 +24,10 @@
 #include <sys/types.h>
 #include <cstring>
 
+#if WINAPI_XWINDOWS
+#include <linux/limits.h>
+#include <libgen.h>
+#endif
 //
 // ArchFileUnix
 //
@@ -127,7 +131,14 @@ ArchFileUnix::getProfileDirectory()
 	}
 	else {
 #if WINAPI_XWINDOWS
-		dir = getUserDirectory().append("/.synergy");
+		{
+			char buff[PATH_MAX];
+			ssize_t len = ::readlink("/proc/self/exe", buff, sizeof(buff)-1);
+			if (len != -1) {
+				buff[len] = '\0';
+				return std::string(dirname(buff));
+			}
+		}
 #else
 		dir = getUserDirectory().append("/Library/Synergy");
 #endif

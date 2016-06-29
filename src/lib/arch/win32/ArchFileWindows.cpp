@@ -23,6 +23,7 @@
 #include <shlobj.h>
 #include <tchar.h>
 #include <string.h>
+#include "Shlwapi.h"
 
 //
 // ArchFileWindows
@@ -159,17 +160,12 @@ ArchFileWindows::getProfileDirectory()
 		dir = m_profileDirectory;
 	}
 	else {
-		TCHAR result[MAX_PATH];
-		if (SUCCEEDED(SHGetFolderPath(NULL, CSIDL_LOCAL_APPDATA, NULL, 0, result))) {
-			dir = result;
-		}
-		else {
-			dir = getUserDirectory();
-		}
+		HMODULE hModule = GetModuleHandle(NULL);
+		TCHAR path[MAX_PATH];
+		GetModuleFileName(hModule, path, MAX_PATH);
+		PathRemoveFileSpec(path);
+		dir = path;
 	}
-
-	// HACK: append program name, this seems wrong.
-	dir.append("\\Synergy");
 
 	return dir;
 }

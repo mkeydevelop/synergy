@@ -1027,7 +1027,7 @@ void MainWindow::setEdition(int type)
 		title = "Synergy Trial";
 	}
 	else {
-		title = "Synergy (UNREGISTERED)";
+		title = "Synergy";
 	}
 
 	setWindowTitle(title);

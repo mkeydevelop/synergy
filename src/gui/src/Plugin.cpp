@@ -31,7 +31,7 @@ static const char kLinuxPackagePlatformRpm64[] = "Linux-x86_64-rpm";
 
 #if defined(Q_OS_WIN)
 static const char kWinPluginExt[] = ".dll";
-static const char kInstallerPluginLocation[] = "Plugins";
+static const char kInstallerPluginLocation[] = "plugins";
 #elif defined(Q_OS_MAC)
 static const char kMacPluginPrefix[] = "lib";
 static const char kMacPluginExt[] = ".dylib";
@@ -39,8 +39,7 @@ static const char kInstallerPluginLocation[] = "plugins"; // TODO: Fix for mac
 #else
 static const char kLinuxPluginPrefix[] = "lib";
 static const char kLinuxPluginExt[] = ".so";
-// /usr/bin becomes /usr/bin/../lib/syn...
-static const char kInstallerPluginLocation[] = "../lib/synergy/plugins";
+static const char kInstallerPluginLocation[] = "plugins";
 #endif
 
 QString Plugin::getOsSpecificExt()
