@@ -20,8 +20,6 @@
 #include "SubscriptionKey.h"
 #include "common/common.h"
 
-#include "gtest/gtest_prod.h"
-
 class SubscriptionManager {
 public:
 	SubscriptionManager();
@@ -34,17 +32,6 @@ public:
 
 	//! Use standard output to return subscription filename to gui
 	void				printFilename();
-
-private:
-	FRIEND_TEST(SubscriptionTests, decode_invalidLength_throwException);
-	FRIEND_TEST(SubscriptionTests, decode_invalidSerial_outputPlainText);
-	FRIEND_TEST(SubscriptionTests, decode_unrecognizedDigit_throwException);
-	FRIEND_TEST(SubscriptionTests, parsePlainSerial_noParity_throwException);
-	FRIEND_TEST(SubscriptionTests, parsePlainSerial_invalidSerial_throwException);
-	FRIEND_TEST(SubscriptionTests, parsePlainSerial_validSerial_validSubscriptionKey);
-	FRIEND_TEST(SubscriptionTests, parsePlainSerial_expiredTrialSerial_throwException);
-	FRIEND_TEST(SubscriptionTests, parsePlainSerial_expiredBasicSerial_validSubscriptionKey);
-	FRIEND_TEST(SubscriptionTests, parsePlainSerial_validSerialWithoutCompany_validSubscriptionKey);
 
 private:
 	String				decode(const String& input);

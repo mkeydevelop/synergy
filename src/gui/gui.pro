@@ -46,11 +46,6 @@ SOURCES += src/main.cpp \
     src/Ipc.cpp \
     src/SynergyLocale.cpp \
     src/QUtility.cpp \
-    src/ZeroconfServer.cpp \
-    src/ZeroconfThread.cpp \
-    src/ZeroconfRegister.cpp \
-    src/ZeroconfBrowser.cpp \
-    src/ZeroconfService.cpp \
     src/DataDownloader.cpp \
     src/AddClientDialog.cpp \
     src/CommandProcess.cpp \
@@ -91,12 +86,6 @@ HEADERS += src/MainWindow.h \
     src/Ipc.h \
     src/SynergyLocale.h \
     src/QUtility.h \
-    src/ZeroconfServer.h \
-    src/ZeroconfThread.h \
-    src/ZeroconfRegister.h \
-    src/ZeroconfRecord.h \
-    src/ZeroconfBrowser.h \
-    src/ZeroconfService.h \
     src/DataDownloader.h \
     src/AddClientDialog.h \
     src/CommandProcess.h \
@@ -123,7 +112,6 @@ macx {
     QMAKE_BUNDLE_DATA += QSYNERGY_ICON
     LIBS += $$MACX_LIBS
 }
-unix:!macx:LIBS += -ldns_sd
 debug { 
     OBJECTS_DIR = tmp/debug
     MOC_DIR = tmp/debug
@@ -135,11 +123,9 @@ release {
     RCC_DIR = tmp/release
 }
 win32-g++ {
-    LIBS += -L"../../ext/bonjour/x64" -ldnssd
     INCLUDEPATH += "$$(BONJOUR_SDK_HOME)/Include/"
 }
 win32-msvc2015 {
-    LIBS += -L"$$(BONJOUR_SDK_HOME)/Lib/x64" -ldnssd
     LIBS += -lAdvapi32
     QMAKE_LFLAGS += /NODEFAULTLIB:LIBCMT
     INCLUDEPATH += "$$(BONJOUR_SDK_HOME)/Include/"

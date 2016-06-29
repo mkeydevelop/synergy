@@ -996,7 +996,7 @@ void MainWindow::updateZeroconfService()
 			}
 
 			if (m_AppConfig.autoConfig() || synergyType() == synergyServer) {
-				m_pZeroconfService = new ZeroconfService(this);
+				//m_pZeroconfService = new ZeroconfService(this);
 			}
 		}
 	}

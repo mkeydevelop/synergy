@@ -34,7 +34,7 @@ class Toolchain:
 
 	# options used by all commands
 	globalOptions = 'v'
-	globalOptionsLong = ['no-prompts', 'verbose', 'skip-gui', 'skip-core', 'skip-tests']
+	globalOptionsLong = ['no-prompts', 'verbose', 'skip-gui', 'skip-core']
 
 	# list of valid commands as keys. the values are optarg strings, but most 
 	# are None for now (this is mainly for extensibility)
@@ -241,21 +241,12 @@ class InternalCommands:
 	# by default, compile the gui
 	enableMakeGui = True
 
-	# by default, compile the tests
-	enableMakeTests = True
-	
 	# by default, unknown
 	macSdk = None
 	
 	# by default, unknown
 	macIdentity = None
 	
-	# gtest dir with version number
-	gtestDir = 'gtest-1.6.0'
-	
-	# gmock dir with version number
-	gmockDir = 'gmock-1.6.0'
-
 	win32_generators = {
 		1 : VisualStudioGenerator('14'),
 		2 : VisualStudioGenerator('14 Win64'),
@@ -322,48 +313,6 @@ class InternalCommands:
 
 		for target in targets:
 			self.configure(target)
-
-	def checkGTest(self):
-		dir = self.extDir + '/' + self.gtestDir
-		if (os.path.isdir(dir)):
-			return
-		
-		zipFilename = dir + '.zip'
-		if (not os.path.exists(zipFilename)):
-			raise Exception('GTest zip not found at: ' + zipFilename)
-		
-		if not os.path.exists(dir):
-			os.mkdir(dir)
-		
-		zip = zipfile.ZipFile(zipFilename)
-		self.zipExtractAll(zip, dir)
-
-	def checkGMock(self):
-		dir = self.extDir + '/' + self.gmockDir
-		if (os.path.isdir(dir)):
-			return
-		
-		zipFilename = dir + '.zip'
-		if (not os.path.exists(zipFilename)):
-			raise Exception('GMock zip not found at: ' + zipFilename)
-		
-		if not os.path.exists(dir):
-			os.mkdir(dir)
-		
-		zip = zipfile.ZipFile(zipFilename)
-		self.zipExtractAll(zip, dir)
-
-	# ZipFile.extractall() is buggy in 2.6.1
-	# http://bugs.python.org/issue4710
-	def zipExtractAll(self, z, dir):
-		if not dir.endswith("/"):
-			dir += "/"
-		
-		for f in z.namelist():
-			if f.endswith("/"):
-				os.makedirs(dir + f)
-			else:
-				z.extract(f, dir)
 
 	def configure(self, target='', extraArgs=''):
 
@@ -446,14 +395,9 @@ class InternalCommands:
 			cmake_args += " -DOSX_TARGET_MAJOR=" + macSdkMatch.group(1)
 			cmake_args += " -DOSX_TARGET_MINOR=" + macSdkMatch.group(2)
 
-		cmake_args += " -DDISABLE_TESTS=" + str(int(not self.enableMakeTests))
-		
 		# if not visual studio, use parent dir
 		sourceDir = generator.getSourceDir()
 
-		self.checkGTest()
-		self.checkGMock()
-		
 		if extraArgs != '':
 			cmake_args += ' ' + extraArgs
 
@@ -1918,8 +1862,6 @@ class CommandHandler:
 				self.ic.enableMakeGui = False
 			elif o == '--skip-core':
 				self.ic.enableMakeCore = False
-			elif o == '--skip-tests':
-				self.ic.enableMakeTests = False
 			elif o in ('-d', '--debug'):
 				self.build_targets += ['debug',]
 			elif o in ('-r', '--release'):

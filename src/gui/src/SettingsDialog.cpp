@@ -52,7 +52,7 @@ SettingsDialog::SettingsDialog(QWidget* parent, AppConfig& config) :
 	m_pCheckBoxAutoHide->setChecked(appConfig().getAutoHide());
 
 #if defined(Q_OS_WIN)
-       m_pComboElevate->setCurrentIndex(static_cast<int>(appConfig().elevateMode()));
+	m_pComboElevate->setCurrentIndex(static_cast<int>(appConfig().elevateMode()));
 
 	m_pCheckBoxAutoHide->hide();
 #else
@@ -79,7 +79,7 @@ void SettingsDialog::accept()
 	appConfig().setLogToFile(m_pCheckBoxLogToFile->isChecked());
 	appConfig().setLogFilename(m_pLineEditLogFilename->text());
 	appConfig().setLanguage(m_pComboLanguage->itemData(m_pComboLanguage->currentIndex()).toString());
-       appConfig().setElevateMode(static_cast<ElevateMode>(m_pComboElevate->currentIndex()));
+	appConfig().setElevateMode(static_cast<ElevateMode>(m_pComboElevate->currentIndex()));
 	appConfig().setAutoHide(m_pCheckBoxAutoHide->isChecked());
 	appConfig().saveSettings();
 	QDialog::accept();
