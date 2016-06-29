@@ -26,7 +26,7 @@ if (WIN32)
 	else()
 		set(OPENSSL_PLAT_DIR openssl-win32)
 	endif()
-	set(OPENSSL_INCLUDE ../../../../ext/${OPENSSL_PLAT_DIR}/inc32)
+	set(OPENSSL_INCLUDE ../../../../ext/${OPENSSL_PLAT_DIR}/include)
 endif()
 
 if (APPLE)
@@ -44,8 +44,9 @@ add_library(ns SHARED ${sources})
 
 if (WIN32)
 	set(OPENSSL_LIBS
-		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/out32dll/libeay32.lib
-		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/out32dll/ssleay32.lib
+		ws2_32.lib
+		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/lib/libeay32.lib
+		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/lib/ssleay32.lib
 	)
 endif()
 
@@ -70,20 +71,6 @@ if (WIN32)
 		COMMAND xcopy /Y /Q
 			..\\..\\..\\..\\..\\lib\\${CMAKE_CFG_INTDIR}\\ns.*
 			..\\..\\..\\..\\..\\bin\\${CMAKE_CFG_INTDIR}\\plugins\\
-	)
-	add_custom_command(
-		TARGET ns 
-		POST_BUILD
-		COMMAND xcopy /Y /Q
-			..\\..\\..\\..\\..\\ext\\${OPENSSL_PLAT_DIR}\\out32dll\\libeay32.*
-			..\\..\\..\\..\\..\\bin\\${CMAKE_CFG_INTDIR}
-	)
-	add_custom_command(
-		TARGET ns 
-		POST_BUILD
-		COMMAND xcopy /Y /Q
-			..\\..\\..\\..\\..\\ext\\${OPENSSL_PLAT_DIR}\\out32dll\\ssleay32.*
-			..\\..\\..\\..\\..\\bin\\${CMAKE_CFG_INTDIR}
 	)
 endif()
 
