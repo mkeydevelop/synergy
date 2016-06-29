@@ -133,34 +133,34 @@ ArchSystemWindows::isWOW64() const
 std::string
 ArchSystemWindows::getLibsUsed(void) const
 {
-    HMODULE hMods[1024];
-    HANDLE hProcess;
-    DWORD cbNeeded;
-    unsigned int i;
-	char hex[16];
+	HMODULE hMods[1024];
+	HANDLE hProcess;
+	DWORD cbNeeded;
+	unsigned int i;
+	char hex[18];
 
 	DWORD pid = GetCurrentProcessId();
 
 	std::string msg = "pid:" + std::to_string((_ULonglong)pid) + "\n";
 
-    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
+	hProcess = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, pid);
 
-    if (NULL == hProcess) {
-        return msg;
+	if (NULL == hProcess) {
+		return msg;
 	}
 
-    if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded)) {
-        for (i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
-            TCHAR szModName[MAX_PATH];
-            if (GetModuleFileNameEx(hProcess, hMods[i], szModName, sizeof(szModName) / sizeof(TCHAR))) {
+	if (EnumProcessModules(hProcess, hMods, sizeof(hMods), &cbNeeded)) {
+		for (i = 0; i < (cbNeeded / sizeof(HMODULE)); i++) {
+			TCHAR szModName[MAX_PATH];
+			if (GetModuleFileNameEx(hProcess, hMods[i], szModName, sizeof(szModName) / sizeof(TCHAR))) {
 				sprintf(hex, "(0x%08llX)", reinterpret_cast<long long>(hMods[i]));
 				msg += szModName;
 				msg.append(hex);
 				msg.append("\n");
-            }
-        }
-    }
+			}
+		}
+	}
 
-    CloseHandle(hProcess);
-    return msg;
+	CloseHandle(hProcess);
+	return msg;
 }
