@@ -343,6 +343,12 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 				if (argBase->m_logFile != NULL) {
 					logFilename = String(argBase->m_logFile);
 					ARCH->setting("LogFilename", logFilename);
+
+					if (m_fileLogOutputter == NULL) {
+						m_fileLogOutputter = new FileLogOutputter(logFilename.c_str());
+						CLOG->insert(m_fileLogOutputter);
+					}
+
 					m_watchdog->setFileLogOutputter(m_fileLogOutputter);
 					command = ArgParser::assembleCommand(argsArray, "--log", 1);
 					LOG((CLOG_DEBUG "removed log file argument and filename %s from command ", logFilename.c_str()));
