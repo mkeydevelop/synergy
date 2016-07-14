@@ -63,7 +63,7 @@ DaemonApp* DaemonApp::s_instance = NULL;
 int
 mainLoopStatic()
 {
-	DaemonApp::s_instance->mainLoop(true);
+	DaemonApp::s_instance->mainLoop(false);
 	return kExitSuccess;
 }
 
@@ -347,12 +347,12 @@ DaemonApp::handleIpcMessage(const Event& e, void*)
 					command = ArgParser::assembleCommand(argsArray, "--log", 1);
 					LOG((CLOG_DEBUG "removed log file argument and filename %s from command ", logFilename.c_str()));
 					LOG((CLOG_DEBUG "new command, elevate=%d command=%s", cm->elevate(), command.c_str()));
+
+					m_fileLogOutputter->setLogFilename(logFilename.c_str());
 				}
 				else {
 					m_watchdog->setFileLogOutputter(NULL);
 				}
-
-				m_fileLogOutputter->setLogFilename(logFilename.c_str());
 #endif
 			}
 			else {
