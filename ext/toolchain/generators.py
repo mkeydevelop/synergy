@@ -38,8 +38,9 @@ class VisualStudioGenerator(Generator):
 		return super(VisualStudioGenerator, self).getBinDir(target) + '/' + target
 
 class MakefilesGenerator(Generator):
-	def __init__(self):
+	def __init__(self, mingwMake=False):
 		super(MakefilesGenerator, self).__init__('Unix Makefiles')
+                self.mingwMake = mingwMake
 
 	def getBuildDir(self, target):
 		return super(MakefilesGenerator, self).getBuildDir(target) + '/' + target

@@ -37,23 +37,24 @@ if (UNIX)
 	include_directories(
 		../../..
 	)
-endif()
-
-if (APPLE)
-	list(APPEND inc
+elseif (APPLE)
+	include_directories(
 		/System/Library/Frameworks
 	)
+elseif (WIN32)
+	if (CASE_SENSITIVE)
+		include_directories(
+			../arch/mingw
+		)
+	endif()
 endif()
 
-include_directories(${inc})
 add_library(platform STATIC ${sources})
 target_link_libraries(platform client ${libs})
 
 if (UNIX)
 	target_link_libraries(platform io net ipc synergy client ${libs})
-endif()
-
-if (APPLE)
+elseif (APPLE)
 	find_library(COCOA_LIBRARY Cocoa)
 	target_link_libraries(platform ${COCOA_LIBRARY})
 endif()

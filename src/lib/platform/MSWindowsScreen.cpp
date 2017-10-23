@@ -44,7 +44,7 @@
 #include "base/TMethodJob.h"
 
 #include <string.h>
-#include <Shlobj.h>
+#include <ShlObj.h>
 #include <comutil.h>
 #include <algorithm>
 

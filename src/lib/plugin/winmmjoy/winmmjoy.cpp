@@ -18,11 +18,9 @@
 
 #include "winmmjoy.h"
 
-#include <MMSystem.h>
+#include <mmsystem.h>
 #include <iostream>
 #include <sstream>
-
-#pragma comment(lib, "winmm.lib")
 
 std::stringstream _logStream;
 #define LOG(s) \

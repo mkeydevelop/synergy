@@ -72,6 +72,41 @@ else()
 	set(SYNERGY_ADD_HEADERS TRUE)
 endif()
 
+if (MINGW)
+
+	if (UNIX)
+		set(CASE_SENSITIVE 1)
+	endif()
+
+	set(UNIX 0)
+	set(WIN32 1)
+
+	set(CMAKE_SYSTEM_NAME Windows)
+	set(TOOLCHAIN_PREFIX x86_64-w64-mingw32)
+
+	# cross compilers to use for C and C++
+	set(CMAKE_C_COMPILER ${TOOLCHAIN_PREFIX}-gcc)
+	set(CMAKE_CXX_COMPILER ${TOOLCHAIN_PREFIX}-g++)
+	set(CMAKE_RC_COMPILER ${TOOLCHAIN_PREFIX}-windres)
+	SET(CMAKE_AR ${TOOLCHAIN_PREFIX}-ar)
+	SET(CMAKE_RANLIB ${TOOLCHAIN_PREFIX}-ranlib)
+
+	# target environment on the build host system
+	#   set 1st to dir with the cross compiler's C/C++ headers/libs
+	set(CMAKE_FIND_ROOT_PATH /usr/${TOOLCHAIN_PREFIX})
+
+	# modify default behavior of FIND_XXX() commands to
+	# search for headers/libs in the target environment and
+	# search for programs in the build host environment
+	set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+	set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+	set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+	set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
+	set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
+	set(CMAKE_SHARED_LIBRARY_SUFFIX ".dll")
+	set(CMAKE_EXECUTABLE_SUFFIX ".exe")
+endif()
+
 # Depending on the platform, pass in the required defines.
 if (UNIX)
 
@@ -304,44 +339,45 @@ if (UNIX)
 	endif()
 
 else() # not-unix
+	if (MINGW)
+		list(APPEND libs wtsapi32 userenv wininet shlwapi psapi ksuser ole32 gdi32 kernel32)
 
-	list(APPEND libs Wtsapi32 Userenv Wininet comsuppw Shlwapi)
+		add_definitions(-DWIN32 -D_WINDOWS -D_CRT_SECURE_NO_WARNINGS -DVERSION=\"${VERSION}\")
+	else()
+		list(APPEND libs Wtsapi32 Userenv Wininet comsuppw Shlwapi)
 
-	add_definitions(
-		/DWIN32
-		/D_WINDOWS
-		/D_CRT_SECURE_NO_WARNINGS
-		/DVERSION=\"${VERSION}\"
-		/D_XKEYCHECK_H
-	)
-	
-	if (MSVC_VERSION EQUAL 1600)
-		set(SLN_FILENAME "${CMAKE_CURRENT_BINARY_DIR}/synergy.sln")
-		if (EXISTS "${SLN_FILENAME}" )
-			file(APPEND "${SLN_FILENAME}" "\n# This should be regenerated!\n")
+		add_definitions(
+			/DWIN32
+			/D_WINDOWS
+			/D_CRT_SECURE_NO_WARNINGS
+			/DVERSION=\"${VERSION}\"
+			/D_XKEYCHECK_H
+			)
+
+		if (MSVC_VERSION EQUAL 1600)
+			set(SLN_FILENAME "${CMAKE_CURRENT_BINARY_DIR}/synergy.sln")
+			if (EXISTS "${SLN_FILENAME}" )
+				file(APPEND "${SLN_FILENAME}" "\n# This should be regenerated!\n")
+			endif()
 		endif()
-	endif()
 
+		# TODO:	consider using /analyze to uncover potential bugs in the source code.
+
+		# /WX - warnings as errors (we have a problem with people checking in code with warnings).
+		# /FR - generate browse information (ncb files) useful for using IDE.
+		# /MP - use multi cores to compile.
+		# /D _BIND_TO_CURRENT_VCLIBS_VERSION - TODO: explain why.
+		# /D _SECURE_SCL=1 - find bugs with iterators.
+		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /FR /MP /D _BIND_TO_CURRENT_VCLIBS_VERSION=1 /D _SECURE_SCL=1")
+
+		# /MD - use multi-core libraries.
+		# /O2 - get the fastest code.
+		# /Ob2 - expand inline functions (auto-inlining).
+		set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD /O2 /Ob2")
+	endif()
 endif()
 
 add_subdirectory(src)
-
-if (WIN32)
-	# TODO:	consider using /analyze to uncover potential bugs in the source code.
-
-	# /WX - warnings as errors (we have a problem with people checking in code with warnings).
-	# /FR - generate browse information (ncb files) useful for using IDE.
-	# /MP - use multi cores to compile.
-	# /D _BIND_TO_CURRENT_VCLIBS_VERSION - TODO: explain why.
-	# /D _SECURE_SCL=1 - find bugs with iterators.
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /WX /FR /MP /D _BIND_TO_CURRENT_VCLIBS_VERSION=1 /D _SECURE_SCL=1")
-	
-	# /MD - use multi-core libraries.
-	# /O2 - get the fastest code.
-	# /Ob2 - expand inline functions (auto-inlining).
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD /O2 /Ob2")
-
-endif()
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "IRIX")
 	set_target_properties(synergys PROPERTIES LINK_FLAGS "-all -woff 33 -woff 84 -woff 15")

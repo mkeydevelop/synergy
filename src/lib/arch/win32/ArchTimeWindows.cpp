@@ -31,7 +31,7 @@
 #define MMNOMCI         // Disable: MCI support
 #define MMNOMMIO        // Disable: Multimedia file I/O support
 #define MMNOMMSYSTEM    // Disable: General MMSYSTEM functions
-#include <MMSystem.h>
+#include <mmsystem.h>
 
 typedef WINMMAPI DWORD (WINAPI *PTimeGetTime)(void);
 

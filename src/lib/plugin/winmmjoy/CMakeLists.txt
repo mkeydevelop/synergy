@@ -23,10 +23,44 @@ endif()
 
 add_library(winmmjoy SHARED ${sources})
 
-add_custom_command(
-	TARGET winmmjoy 
-	POST_BUILD
-	COMMAND xcopy /Y /Q
-		..\\..\\..\\..\\..\\lib\\${CMAKE_CFG_INTDIR}\\winmmjoy.*
-		..\\..\\..\\..\\..\\bin\\${CMAKE_CFG_INTDIR}\\plugins\\
-)
+if (CASE_SENSITIVE)
+	include_directories(
+		../../arch/mingw
+	)
+endif()
+
+target_link_libraries(winmmjoy winmm)
+
+if (MINGW)
+	#if (CMAKE_BUILD_TYPE STREQUAL Debug)
+	#	add_custom_command(
+	#		TARGET winmmjoy
+	#		POST_BUILD
+	#		COMMAND mkdir -p
+	#			${CMAKE_SOURCE_DIR}/bin/debug/plugins
+	#			&&
+	#			cp
+	#			${CMAKE_SOURCE_DIR}/lib/debug/libns.*
+	#			${CMAKE_SOURCE_DIR}/bin/debug/plugins/
+	#	)
+	#else()
+	#	add_custom_command(
+	#		TARGET winmmjoy
+	#		POST_BUILD
+	#		COMMAND mkdir -p
+	#			${CMAKE_SOURCE_DIR}/bin/plugins
+	#			&&
+	#			cp
+	#			${CMAKE_SOURCE_DIR}/lib/libns.*
+	#			${CMAKE_SOURCE_DIR}/bin/plugins/
+	#	)
+	#endif()
+else()
+	add_custom_command(
+		TARGET winmmjoy 
+		POST_BUILD
+		COMMAND xcopy /Y /Q
+			..\\..\\..\\..\\..\\lib\\${CMAKE_CFG_INTDIR}\\winmmjoy.*
+			..\\..\\..\\..\\..\\bin\\${CMAKE_CFG_INTDIR}\\plugins\\
+	)
+endif()

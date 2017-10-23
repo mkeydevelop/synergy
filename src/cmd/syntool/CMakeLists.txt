@@ -25,11 +25,23 @@ if (UNIX)
 	include_directories(
 		../../..
 	)
+elseif (WIN32)
+	if (CASE_SENSITIVE)
+		include_directories(
+			../../lib/arch/mingw
+		)
+	endif()
 endif()
 
 add_executable(syntool ${sources})
-target_link_libraries(syntool
-	synergy arch base client common io ipc mt net platform server ${libs})
+
+if (NOT MINGW)
+	target_link_libraries(syntool
+		synergy arch base client common io ipc mt net platform server ${libs})
+else()
+	target_link_libraries(syntool
+		-static -Wl,--start-group synergy arch base client common io ipc mt net platform server -Wl,--end-group ${libs})
+endif()
 
 if (CONF_CPACK)
 	install(TARGETS

@@ -45,6 +45,12 @@ if (UNIX)
 	include_directories(
 		../../..
 	)
+elseif (WIN32)
+	if (CASE_SENSITIVE)
+		include_directories(
+			mingw
+		)
+	endif()
 endif()
 
 add_library(arch STATIC ${sources})

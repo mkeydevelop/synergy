@@ -21,9 +21,9 @@
 #include "base/Log.h"
 #include "common/Version.h"
 
-#include <Wtsapi32.h>
+#include <WtsApi32.h>
 #pragma warning(disable: 4099)
-#include <Userenv.h>
+#include <UserEnv.h>
 #pragma warning(default: 4099)
 
 // parent process name for services in Vista

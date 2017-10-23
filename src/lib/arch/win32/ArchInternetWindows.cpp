@@ -21,7 +21,7 @@
 #include "common/Version.h"
 
 #include <sstream>
-#include <Wininet.h>
+#include <WinInet.h>
 #include <Shlwapi.h>
 
 struct WinINetUrl {

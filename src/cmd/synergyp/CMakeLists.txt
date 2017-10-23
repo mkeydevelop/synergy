@@ -54,6 +54,12 @@ if (UNIX)
 	include_directories(
 		../../..
 	)
+elseif (WIN32)
+	if (CASE_SENSITIVE)
+		include_directories(
+			../../lib/arch/mingw
+		)
+	endif()
 endif()
 
 if (WIN32)
@@ -61,9 +67,14 @@ if (WIN32)
 else()
 	add_executable(synergyp ${sources})
 endif()	
-	
-target_link_libraries(synergyp
-	arch base client common io mt net ipc platform server synergy client ${libs})
+
+if (NOT MINGW)
+	target_link_libraries(synergyp
+		arch base client common io mt net ipc platform server synergy client ${libs})
+else()
+	target_link_libraries(synergyp
+		-static -Wl,--start-group arch base client common io mt net ipc platform server synergy client -Wl,--end-group ${libs})
+endif()
 
 if (CONF_CPACK)
 	install(TARGETS

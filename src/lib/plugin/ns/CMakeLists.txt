@@ -20,7 +20,7 @@ if (SYNERGY_ADD_HEADERS)
 	list(APPEND sources ${headers})
 endif()
 
-if (WIN32)
+if (WIN32 AND NOT MINGW)
 	if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		set(OPENSSL_PLAT_DIR openssl-win64)
 	else()
@@ -40,14 +40,24 @@ include_directories(
 	${OPENSSL_INCLUDE}
 )
 
+if (CASE_SENSITIVE)
+	include_directories(
+		../../arch/mingw
+	)
+endif()
+
 add_library(ns SHARED ${sources})
 
 if (WIN32)
-	set(OPENSSL_LIBS
-		ws2_32.lib
-		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/lib/libeay32.lib
-		${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/lib/ssleay32.lib
-	)
+	if (MINGW)
+		set(OPENSSL_LIBS ssl crypto)
+	else()
+		set(OPENSSL_LIBS
+			ws2_32.lib
+			${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/lib/libeay32.lib
+			${CMAKE_SOURCE_DIR}/ext/${OPENSSL_PLAT_DIR}/lib/ssleay32.lib
+		)
+	endif()
 endif()
 
 if (UNIX)
@@ -61,10 +71,16 @@ if (UNIX)
 	endif()
 endif()
 
-target_link_libraries(ns
-	arch base client common io mt net ipc platform server synergy ${libs} ${OPENSSL_LIBS})
 
-if (WIN32)
+if (NOT MINGW)
+	target_link_libraries(ns
+		arch base client common io mt net ipc platform server synergy ${libs} ${OPENSSL_LIBS})
+else()
+	target_link_libraries(ns
+		-Wl,--start-group arch base client common io mt net ipc platform server synergy -Wl,--end-group ${libs} ${OPENSSL_LIBS})
+endif()
+
+if (WIN32 AND NOT MINGW)
 	add_custom_command(
 		TARGET ns 
 		POST_BUILD
@@ -74,7 +90,7 @@ if (WIN32)
 	)
 endif()
 
-if (UNIX)
+if (UNIX OR MINGW)
 	if (APPLE)
 		add_custom_command(
 			TARGET ns

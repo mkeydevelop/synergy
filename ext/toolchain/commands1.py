@@ -261,6 +261,7 @@ class InternalCommands:
 	unix_generators = {
 		1 : MakefilesGenerator(),
 		2 : EclipseGenerator(),
+		3 : MakefilesGenerator(True),
 	}
 
 	darwin_generators = {
@@ -383,6 +384,8 @@ class InternalCommands:
 		# for makefiles always specify a build type (debug, release, etc)
 		if generator.cmakeName.find('Unix Makefiles') != -1:
 			cmake_args += ' -DCMAKE_BUILD_TYPE=' + target.capitalize()
+                        if (generator.mingwMake):
+                            cmake_args += ' -DMINGW=1'
 			
 		elif sys.platform == "darwin":
 			macSdkMatch = re.match("(\d+)\.(\d+)", self.macSdk)

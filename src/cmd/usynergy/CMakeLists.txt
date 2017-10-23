@@ -21,5 +21,12 @@ elseif (UNIX)
 endif()
 
 include_directories(../../micro)
+
+if (WIN32 AND CASE_SENSITIVE)
+	include_directories(
+		../../lib/arch/mingw
+	)
+endif()
+
 add_executable(usynergy ${sources})
-target_link_libraries(usynergy micro)
+target_link_libraries(usynergy -static micro)

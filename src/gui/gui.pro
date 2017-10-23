@@ -124,6 +124,7 @@ release {
 }
 win32-g++ {
     INCLUDEPATH += "$$(BONJOUR_SDK_HOME)/Include/"
+    INCLUDEPATH += ../lib/arch/mingw
 }
 win32-msvc2015 {
     LIBS += -lAdvapi32
@@ -131,6 +132,7 @@ win32-msvc2015 {
     INCLUDEPATH += "$$(BONJOUR_SDK_HOME)/Include/"
 }
 win32 { 
+    CONFIG += static
     Debug:DESTDIR = ../../bin/Debug
     Release:DESTDIR = ../../bin/Release
 }

@@ -35,7 +35,7 @@
 
 #include <sstream>
 #include <UserEnv.h>
-#include <Shellapi.h>
+#include <shellapi.h>
 
 #define MAXIMUM_WAIT_TIME 3
 enum {
